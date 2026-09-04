@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Рейтинг клуба - Нейрокоины</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'Nozhik';
-            src: local('Nozhik'), local('Arial');
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +12,7 @@
         }
 
         body {
-            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #025FEB 0%, #00C3FA 100%);
             min-height: 100vh;
             padding: 20px;
@@ -31,18 +25,6 @@
             border-radius: 30px;
             padding: 30px;
             box-shadow: 0 30px 80px rgba(2, 95, 235, 0.2);
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .header {
@@ -92,10 +74,10 @@
             border-radius: 50px;
             background: white;
             cursor: pointer;
-            font-family: 'Nozhik', 'Montserrat', sans-serif;
             font-weight: 600;
             transition: all 0.3s;
             font-size: 1em;
+            font-family: inherit;
         }
 
         .group-btn.active {
@@ -251,15 +233,11 @@
             <a href="index.html" class="back-btn">← На главную</a>
         </div>
 
-        <!-- Выбор группы -->
         <div class="group-selector" id="groupSelector">
             <button class="group-btn active" onclick="selectGroup('all')">👥 Все группы</button>
         </div>
 
-        <!-- Топ ученик -->
         <div id="topStudent"></div>
-
-        <!-- Таблица рейтинга -->
         <div id="ratingContent">
             <div class="loading">Загрузка...</div>
         </div>
@@ -267,48 +245,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ============================================
-        // 🔑 ВАШИ КЛЮЧИ
-        // ============================================
         const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co';
-        const MY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnBrZnFsZ3dydWtsemFubXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDYxODYsImV4cCI6MjEwNDEyMjE4Nn0.1B8WzdGP6tAdWJxp0pYEgxBsmLXIeEXBgJ7BLWfm-ag';
-        // ============================================
+        const MY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnBrZnFsZ3dydWtsemFubXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDYxODYsImV4cCI6MjEwNDEyMjE4Nn0.1B8WzdGP6tAdWJxp0pYEgxBsmLXIeEXBgJ7BLWfm-ag
+';
 
         const supabaseClient = supabase.createClient(MY_SUPABASE_URL, MY_SUPABASE_KEY);
         let students = [];
-        let groups = [];
         let currentGroup = 'all';
 
-        // Загрузка данных
         async function loadData() {
             try {
-                const [studentsRes, groupsRes] = await Promise.all([
-                    supabaseClient.from('students').select('*').order('coins', { ascending: false }),
-                    supabaseClient.from('groups').select('*').order('name')
-                ]);
+                const { data, error } = await supabaseClient
+                    .from('students')
+                    .select('*')
+                    .order('coins', { ascending: false });
 
-                if (studentsRes.error) throw studentsRes.error;
-                if (groupsRes.error) throw groupsRes.error;
-
-                students = studentsRes.data || [];
-                groups = groupsRes.data || [];
-
+                if (error) throw error;
+                students = data || [];
                 renderGroupSelector();
                 renderRating();
-
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
                 document.getElementById('ratingContent').innerHTML = `
                     <div class="empty-state">
                         <div class="icon">⚠️</div>
-                        <h3>Ошибка загрузки данных</h3>
-                        <p>Проверьте подключение к интернету</p>
+                        <h3>Ошибка загрузки</h3>
+                        <p>${error.message}</p>
                     </div>
                 `;
             }
         }
 
-        // Выбор группы
         function selectGroup(group) {
             currentGroup = group;
             document.querySelectorAll('.group-btn').forEach(btn => {
@@ -318,48 +284,31 @@
             renderRating();
         }
 
-        // Рендер выбора группы
         function renderGroupSelector() {
             const container = document.getElementById('groupSelector');
+            const groups = [...new Set(students.map(s => s.group_name))];
+            
             let html = `<button class="group-btn active" data-group="all" onclick="selectGroup('all')">👥 Все группы</button>`;
-            
-            // Собираем уникальные группы из учеников
-            const uniqueGroups = [...new Set(students.map(s => s.group_name))];
-            
-            uniqueGroups.forEach(groupName => {
+            groups.forEach(groupName => {
                 const count = students.filter(s => s.group_name === groupName).length;
                 html += `<button class="group-btn" data-group="${groupName}" onclick="selectGroup('${groupName}')">${groupName} (${count})</button>`;
             });
-            
             container.innerHTML = html;
         }
 
-        // Рендер рейтинга
         function renderRating() {
             const container = document.getElementById('ratingContent');
             const topContainer = document.getElementById('topStudent');
 
-            let filtered = students;
-            if (currentGroup !== 'all') {
-                filtered = students.filter(s => s.group_name === currentGroup);
-            }
+            let filtered = currentGroup === 'all' ? students : students.filter(s => s.group_name === currentGroup);
 
             if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📚</div>
-                        <h3>В этой группе пока нет учеников</h3>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><div class="icon">📚</div><h3>Нет учеников</h3></div>`;
                 topContainer.innerHTML = '';
                 return;
             }
 
-            // Сортируем по убыванию
-            const sorted = [...filtered].sort((a, b) => b.coins - a.coins);
-
-            // Топ ученик
-            const top = sorted[0];
+            const top = filtered[0];
             topContainer.innerHTML = `
                 <div class="top-student">
                     <div class="crown">👑</div>
@@ -369,7 +318,6 @@
                 </div>
             `;
 
-            // Таблица
             let html = `
                 <table class="rating-table">
                     <thead>
@@ -383,7 +331,7 @@
                     <tbody>
             `;
 
-            sorted.forEach((s, index) => {
+            filtered.forEach((s, index) => {
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
                 html += `
                     <tr>
@@ -399,10 +347,7 @@
             container.innerHTML = html;
         }
 
-        // Автообновление каждые 30 секунд
         setInterval(loadData, 30000);
-
-        // Инициализация
         loadData();
     </script>
 </body>
