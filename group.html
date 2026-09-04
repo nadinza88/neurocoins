@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рейтинг группы - Нейрокоины</title>
+    <title>Рейтинг клуба - Нейрокоины</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -83,6 +83,7 @@
             gap: 10px;
             flex-wrap: wrap;
             margin-bottom: 30px;
+            justify-content: center;
         }
 
         .group-btn {
@@ -155,6 +156,7 @@
             font-weight: 700;
             color: #00b894;
             font-size: 1.1em;
+            text-align: right;
         }
 
         .rating-table .group-tag {
@@ -196,31 +198,6 @@
             margin-top: 5px;
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: #f8faff;
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .stat-card .number {
-            font-size: 2em;
-            font-weight: 700;
-            color: #025FEB;
-        }
-
-        .stat-card .label {
-            color: #666;
-            margin-top: 5px;
-        }
-
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -236,18 +213,6 @@
             text-align: center;
             padding: 40px;
             color: #999;
-        }
-
-        .debug-info {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin: 10px 0;
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-break: break-all;
-            display: none;
         }
 
         @media (max-width: 768px) {
@@ -286,25 +251,6 @@
             <a href="index.html" class="back-btn">← На главную</a>
         </div>
 
-        <!-- Отладочная информация -->
-        <div id="debugInfo" class="debug-info"></div>
-
-        <!-- Статистика -->
-        <div class="stats" id="stats">
-            <div class="stat-card">
-                <div class="number" id="totalStudents">0</div>
-                <div class="label">👨‍🎓 Учеников</div>
-            </div>
-            <div class="stat-card">
-                <div class="number" id="totalCoins">0</div>
-                <div class="label">🪙 Всего нейрокоинов</div>
-            </div>
-            <div class="stat-card">
-                <div class="number" id="avgCoins">0</div>
-                <div class="label">📊 Средний балл</div>
-            </div>
-        </div>
-
         <!-- Выбор группы -->
         <div class="group-selector" id="groupSelector">
             <button class="group-btn active" onclick="selectGroup('all')">👥 Все группы</button>
@@ -322,7 +268,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ============================================
-        // 🔑 ВАШИ КЛЮЧИ (ПРАВИЛЬНЫЕ!)
+        // 🔑 ВАШИ КЛЮЧИ
         // ============================================
         const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co';
         const MY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnBrZnFsZ3dydWtsemFubXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDYxODYsImV4cCI6MjEwNDEyMjE4Nn0.1B8WzdGP6tAdWJxp0pYEgxBsmLXIeEXBgJ7BLWfm-ag';
@@ -333,58 +279,30 @@
         let groups = [];
         let currentGroup = 'all';
 
-        function updateDebug(msg) {
-            const el = document.getElementById('debugInfo');
-            el.style.display = 'block';
-            const time = new Date().toLocaleTimeString();
-            el.innerHTML += `[${time}] ${msg}\n`;
-            console.log(msg);
-        }
-
-        updateDebug('✅ Supabase инициализирован');
-
         // Загрузка данных
         async function loadData() {
             try {
-                updateDebug('🔄 Загрузка данных...');
-                
-                const { data: studentsData, error: studentsError } = await supabaseClient
-                    .from('students')
-                    .select('*')
-                    .order('coins', { ascending: false });
+                const [studentsRes, groupsRes] = await Promise.all([
+                    supabaseClient.from('students').select('*').order('coins', { ascending: false }),
+                    supabaseClient.from('groups').select('*').order('name')
+                ]);
 
-                if (studentsError) {
-                    updateDebug('❌ Ошибка загрузки учеников: ' + studentsError.message);
-                    throw studentsError;
-                }
+                if (studentsRes.error) throw studentsRes.error;
+                if (groupsRes.error) throw groupsRes.error;
 
-                students = studentsData || [];
-                updateDebug(`✅ Загружено учеников: ${students.length}`);
-
-                const { data: groupsData, error: groupsError } = await supabaseClient
-                    .from('groups')
-                    .select('*')
-                    .order('name');
-
-                if (groupsError) {
-                    updateDebug('⚠️ Ошибка загрузки групп: ' + groupsError.message);
-                    groups = [];
-                } else {
-                    groups = groupsData || [];
-                    updateDebug(`✅ Загружено групп: ${groups.length}`);
-                }
+                students = studentsRes.data || [];
+                groups = groupsRes.data || [];
 
                 renderGroupSelector();
-                renderStats();
                 renderRating();
 
             } catch (error) {
-                updateDebug('❌ Критическая ошибка: ' + error.message);
+                console.error('Ошибка загрузки:', error);
                 document.getElementById('ratingContent').innerHTML = `
                     <div class="empty-state">
                         <div class="icon">⚠️</div>
                         <h3>Ошибка загрузки данных</h3>
-                        <p>${error.message}</p>
+                        <p>Проверьте подключение к интернету</p>
                     </div>
                 `;
             }
@@ -404,24 +322,16 @@
         function renderGroupSelector() {
             const container = document.getElementById('groupSelector');
             let html = `<button class="group-btn active" data-group="all" onclick="selectGroup('all')">👥 Все группы</button>`;
-            groups.forEach(g => {
-                const count = students.filter(s => s.group_name === g.name).length;
-                html += `<button class="group-btn" data-group="${g.name}" onclick="selectGroup('${g.name}')">${g.name} (${count})</button>`;
+            
+            // Собираем уникальные группы из учеников
+            const uniqueGroups = [...new Set(students.map(s => s.group_name))];
+            
+            uniqueGroups.forEach(groupName => {
+                const count = students.filter(s => s.group_name === groupName).length;
+                html += `<button class="group-btn" data-group="${groupName}" onclick="selectGroup('${groupName}')">${groupName} (${count})</button>`;
             });
+            
             container.innerHTML = html;
-        }
-
-        // Рендер статистики
-        function renderStats() {
-            let filtered = students;
-            if (currentGroup !== 'all') {
-                filtered = students.filter(s => s.group_name === currentGroup);
-            }
-
-            document.getElementById('totalStudents').textContent = filtered.length;
-            const totalCoins = filtered.reduce((sum, s) => sum + s.coins, 0);
-            document.getElementById('totalCoins').textContent = totalCoins;
-            document.getElementById('avgCoins').textContent = filtered.length > 0 ? Math.round(totalCoins / filtered.length) : 0;
         }
 
         // Рендер рейтинга
@@ -480,14 +390,13 @@
                         <td class="rank">${medal}</td>
                         <td class="student-name">${s.name}</td>
                         <td><span class="group-tag">${s.group_name}</span></td>
-                        <td class="coins" style="text-align:right;">🪙 ${s.coins}</td>
+                        <td class="coins">🪙 ${s.coins}</td>
                     </tr>
                 `;
             });
 
             html += '</tbody></table>';
             container.innerHTML = html;
-            renderStats();
         }
 
         // Автообновление каждые 30 секунд
