@@ -49,6 +49,8 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-primary {
             background: #025FEB;
@@ -65,6 +67,13 @@
         .btn-secondary {
             background: #dfe6e9;
             color: #2d3436;
+        }
+        .btn-home {
+            background: #025FEB;
+            color: white;
+        }
+        .btn-home:hover {
+            background: #1a47b8;
         }
         .error-message {
             background: #ffe0e0;
@@ -123,6 +132,11 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         @media (max-width: 600px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -152,19 +166,13 @@
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
                 <h1>👩‍🏫 Панель педагога</h1>
-                <button class="btn btn-secondary" onclick="logout()">🚪 Выйти</button>
+                <div class="header-actions">
+                    <a href="index.html" class="btn btn-home">🏠 На главную</a>
+                    <button class="btn btn-secondary" onclick="logout()">🚪 Выйти</button>
+                </div>
             </div>
 
             <div id="statusMessage"></div>
-
-            <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
-                <h3>📊 Статистика</h3>
-                <div class="stats-grid">
-                    <div><strong>👨‍🎓 Учеников:</strong> <span id="totalStudents">0</span></div>
-                    <div><strong>🪙 Всего монет:</strong> <span id="totalCoins">0</span></div>
-                    <div><strong>📚 Групп:</strong> <span id="totalGroups">0</span></div>
-                </div>
-            </div>
 
             <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
                 <h3>➕ Добавить ученика</h3>
@@ -205,49 +213,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ============================================
-        // 🔑 ВСТАВЬТЕ СВОИ КЛЮЧИ ЗДЕСЬ:
+        // 🔑 ВАШИ КЛЮЧИ
         // ============================================
-        const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co/';
+        const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co';
         const MY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnBrZnFsZ3dydWtsemFubXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDYxODYsImV4cCI6MjEwNDEyMjE4Nn0.1B8WzdGP6tAdWJxp0pYEgxBsmLXIeEXBgJ7BLWfm-ag';
         // ============================================
 
         const ADMIN_PASSWORD = '123456';
         let students = [];
         let groups = [];
-
-        // СОЗДАЕМ КЛИЕНТ ТОЛЬКО ОДИН РАЗ
         const sb = supabase.createClient(MY_SUPABASE_URL, MY_SUPABASE_KEY);
 
-        console.log('✅ Supabase инициализирован');
-
-        // Проверяем ключи
-        if (MY_SUPABASE_URL === 'https://ВАШ_ПРОЕКТ.supabase.co' || MY_SUPABASE_KEY === 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ') {
-            document.getElementById('loginForm').innerHTML = `
-                <div class="login-form">
-                    <h2>⚠️ Ошибка настройки</h2>
-                    <div class="error-message">
-                        <p><strong>Не вставлены ключи Supabase!</strong></p>
-                        <p>Откройте файл admin.html и найдите строки:</p>
-                        <code style="display:block;background:#f4f4f4;padding:10px;border-radius:5px;margin:10px 0;white-space:pre-wrap;">
-const MY_SUPABASE_URL = 'https://ВАШ_ПРОЕКТ.supabase.co';
-const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
-                        </code>
-                        <p>Замените на свои данные из настроек Supabase.</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            checkConnection();
-        }
+        checkConnection();
 
         async function checkConnection() {
             try {
-                const { data, error } = await sb.from('students').select('count');
+                const { data, error } = await sb.from('students').select('*').limit(1);
                 if (error) {
                     showError('Ошибка подключения: ' + error.message);
                     return;
                 }
-                showSuccess('✅ Подключение к Supabase успешно!');
                 checkAuth();
             } catch (e) {
                 showError('❌ Ошибка: ' + e.message);
@@ -310,9 +295,7 @@ const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                 students = studentsRes.data || [];
                 groups = groupsRes.data || [];
 
-                renderStats();
                 renderStudents();
-                showSuccess('✅ Данные загружены');
 
             } catch (error) {
                 showError('Ошибка загрузки: ' + error.message);
@@ -351,7 +334,6 @@ const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                 document.getElementById('studentForm').reset();
                 document.getElementById('studentCoins').value = 0;
 
-                renderStats();
                 renderStudents();
                 showSuccess('✅ Ученик добавлен!');
 
@@ -388,7 +370,6 @@ const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
 
                 student.coins = newCoins;
                 student.history = history;
-                renderStats();
                 renderStudents();
                 alert(`✅ Начислено ${numAmount} нейрокоинов`);
 
@@ -430,7 +411,6 @@ const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
 
                 student.coins = newCoins;
                 student.history = history;
-                renderStats();
                 renderStudents();
                 alert(`✅ Списано ${numAmount} нейрокоинов`);
 
@@ -452,19 +432,12 @@ const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                 if (error) throw error;
 
                 students = students.filter(s => s.id !== studentId);
-                renderStats();
                 renderStudents();
                 alert(`❌ Ученик удален`);
 
             } catch (error) {
                 showError('Ошибка удаления: ' + error.message);
             }
-        }
-
-        function renderStats() {
-            document.getElementById('totalStudents').textContent = students.length;
-            document.getElementById('totalCoins').textContent = students.reduce((sum, s) => sum + s.coins, 0);
-            document.getElementById('totalGroups').textContent = new Set(students.map(s => s.group_name)).size;
         }
 
         function renderStudents() {
@@ -520,8 +493,6 @@ const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
 
             alert(msg);
         }
-
-        console.log('✅ Admin panel loaded successfully!');
     </script>
 </body>
 </html>
