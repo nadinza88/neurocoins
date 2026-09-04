@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель педагога - Нейрокоины</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Nozhik';
+            src: local('Nozhik'), local('Arial');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #025FEB 0%, #00C3FA 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 30px 80px rgba(2, 95, 235, 0.2);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(2, 95, 235, 0.3);
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a24;
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #00a381;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: #dfe6e9;
+            color: #2d3436;
+        }
+
+        .btn-secondary:hover {
+            background: #b2bec3;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 15px;
+            font-size: 1em;
+            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #025FEB;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background: #f8faff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: #025FEB;
+            margin-bottom: 15px;
+        }
+
+        .student-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 2px solid #eef2ff;
+            transition: all 0.3s;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .student-item:hover {
+            border-color: #025FEB;
+            transform: translateX(5px);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .student-coins {
+            color: #025FEB;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .student-actions .btn {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #025FEB;
+        }
+
+        .close-modal {
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #ff6b6b;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-left: 4px solid #025FEB;
+            margin-bottom: 10px;
+            background: #f8faff;
+            border-radius: 10px;
+        }
+
+        .history-item .amount {
+            font-weight: 700;
+        }
+
+        .history-item .amount.positive {
+            color: #00b894;
+        }
+
+        .history-item .amount.negative {
+            color: #ff6b6b;
+        }
+
+        .history-item .date {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8faff, #eef2ff);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #025FEB;
+        }
+
+        .stat-card .label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(2, 95, 235, 0.2);
+        }
+
+        .login-form h2 {
+            text-align: center;
+            color: #025FEB;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .student-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .student-info {
+                justify-content: space-between;
+            }
+
+            .student-actions {
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .group-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .group-btn {
+            padding: 10px 20px;
+            border: 2px solid #dfe6e9;
+            border-radius: 50px;
+            background: white;
+            cursor: pointer;
+            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .group-btn.active {
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            color: white;
+            border-color: #025FEB;
+        }
+
+        .group-btn:hover {
+            border-color: #025FEB;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Форма входа -->
+        <div id="loginForm" style="display:none;">
+            <div class="login-form">
+                <h2>👩‍🏫 Вход для педагога</h2>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="passwordInput" placeholder="Введите пароль" onkeypress="if(event.key==='Enter') login()">
+                </div>
+                <button class="btn btn-primary" onclick="login()" style="width:100%;">Войти</button>
+                <p style="text-align:center;margin-top:15px;color:#999;font-size:0.9em;">Пароль: 123456</p>
+            </div>
+        </div>
+
+        <!-- Основной интерфейс -->
+        <div id="mainContent" style="display:none;">
+            <div class="container">
+                <div class="header">
+                    <h1>👩‍🏫 Панель педагога</h1>
+                    <div>
+                        <button class="btn btn-secondary" onclick="logout()">🚪 Выйти</button>
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div class="stats" id="stats">
+                    <div class="stat-card">
+                        <div class="number" id="totalStudents">0</div>
+                        <div class="label">👨‍🎓 Учеников</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="totalCoins">0</div>
+                        <div class="label">🪙 Всего нейрокоинов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="totalGroups">0</div>
+                        <div class="label">📚 Групп</div>
+                    </div>
+                </div>
+
+                <!-- Форма добавления -->
+                <div class="card">
+                    <h3>➕ Добавить ученика</h3>
+                    <form id="studentForm" onsubmit="addStudent(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Имя ученика *</label>
+                                <input type="text" id="studentName" required placeholder="Например: Иван Петров">
+                            </div>
+                            <div class="form-group">
+                                <label>Группа *</label>
+                                <input type="text" id="studentGroup" required placeholder="Например: Группа А">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Начальные нейрокоины</label>
+                                <input type="number" id="studentCoins" value="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Комментарий</label>
+                                <input type="text" id="studentComment" placeholder="За что начислены">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">➕ Добавить ученика</button>
+                    </form>
+                </div>
+
+                <!-- Управление группами -->
+                <div class="card">
+                    <h3>📚 Управление группами</h3>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;">
+                        <input type="text" id="newGroupName" placeholder="Название группы" style="flex:1;padding:10px;border:2px solid #dfe6e9;border-radius:15px;">
+                        <button class="btn btn-success" onclick="addGroup()">➕ Создать группу</button>
+                    </div>
+                    <div id="groupList"></div>
+                </div>
+
+                <!-- Список учеников -->
+                <div class="card">
+                    <h3>👨‍🎓 Ученики</h3>
+                    <div class="group-selector" id="groupFilter">
+                        <button class="group-btn active" onclick="filterByGroup('all')">Все</button>
+                    </div>
+                    <div id="studentsList">
+                        <div class="loading">Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно истории -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📜 История операций</h2>
+                <span class="close-modal" onclick="closeHistory()">&times;</span>
+            </div>
+            <div id="historyContent"></div>
+        </div>
+    </div>
+
+    <!-- Подключение Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 🔑 Настройки Supabase (ЗАМЕНИТЕ НА СВОИ!)
+        const supabaseUrl = 'https://ВАШ_ПРОЕКТ.supabase.co';
+        const supabaseKey = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const ADMIN_PASSWORD = '123456';
+        let currentUser = null;
+        let currentFilter = 'all';
+        let students = [];
+        let groups = [];
+
+        // Проверка авторизации
+        function checkAuth() {
+            const saved = localStorage.getItem('teacherAuth');
+            if (saved === 'true') {
+                showMainContent();
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+            }
+        }
+
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('teacherAuth', 'true');
+                showMainContent();
+            } else {
+                alert('❌ Неверный пароль!');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('teacherAuth');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        function showMainContent() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            loadData();
+        }
+
+        // Загрузка данных из Supabase
+        async function loadData() {
+            try {
+                // Загружаем учеников
+                const { data: studentsData, error: studentsError } = await supabase
+                    .from('students')
+                    .select('*')
+                    .order('coins', { ascending: false });
+
+                if (studentsError) throw studentsError;
+                students = studentsData || [];
+
+                // Загружаем группы
+                const { data: groupsData, error: groupsError } = await supabase
+                    .from('groups')
+                    .select('*')
+                    .order('name');
+
+                if (groupsError) throw groupsError;
+                groups = groupsData || [];
+
+                renderStats();
+                renderGroupFilter();
+                renderStudents();
+                renderGroupList();
+
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                alert('❌ Ошибка загрузки данных. Проверьте подключение к интернету.');
+            }
+        }
+
+        // Добавление ученика
+        async function addStudent(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('studentName').value.trim();
+            const group = document.getElementById('studentGroup').value.trim();
+            const coins = parseInt(document.getElementById('studentCoins').value) || 0;
+            const comment = document.getElementById('studentComment').value.trim() || 'Первое начисление';
+
+            if (!name || !group) {
+                alert('❌ Заполните имя и группу!');
+                return;
+            }
+
+            // Проверяем, существует ли группа
+            const existingGroup = groups.find(g => g.name === group);
+            if (!existingGroup) {
+                // Создаем группу
+                const { data: newGroup, error: groupError } = await supabase
+                    .from('groups')
+                    .insert([{ name: group }])
+                    .select()
+                    .single();
+
+                if (groupError) {
+                    alert('❌ Ошибка создания группы');
+                    return;
+                }
+                groups.push(newGroup);
+            }
+
+            // Добавляем ученика
+            const newStudent = {
+                name: name,
+                group: group,
+                coins: coins,
+                history: [{
+                    amount: coins,
+                    comment: comment,
+                    date: new Date().toLocaleDateString('ru-RU')
+                }]
+            };
+
+            const { data, error } = await supabase
+                .from('students')
+                .insert([newStudent])
+                .select()
+                .single();
+
+            if (error) {
+                alert('❌ Ошибка добавления ученика');
+                return;
+            }
+
+            students.push(data);
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentCoins').value = 0;
+
+            renderStats();
+            renderStudents();
+            renderGroupList();
+            alert('✅ Ученик добавлен!');
+        }
+
+        // Начисление нейрокоинов
+        async function addCoins(studentId) {
+            const amount = prompt('Сколько нейрокоинов начислить?');
+            if (amount === null) return;
+
+            const numAmount = parseInt(amount);
+            if (isNaN(numAmount) || numAmount <= 0) {
+                alert('❌ Введите положительное число!');
+                return;
+            }
+
+            const comment = prompt('За что начисляем?') || 'Начисление';
+
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            const newCoins = student.coins + numAmount;
+            const history = student.history || [];
+            history.push({
+                amount: numAmount,
+                comment: comment,
+                date: new Date().toLocaleDateString('ru-RU')
+            });
+
+            const { error } = await supabase
+                .from('students')
+                .update({
+                    coins: newCoins,
+                    history: history
+                })
+                .eq('id', studentId);
+
+            if (error) {
+                alert('❌ Ошибка начисления');
+                return;
+            }
+
+            student.coins = newCoins;
+            student.history = history;
+            renderStats();
+            renderStudents();
+            alert(`✅ Начислено ${numAmount} нейрокоинов ${student.name}`);
+        }
+
+        // Списание нейрокоинов
+        async function subtractCoins(studentId) {
+            const amount = prompt('Сколько нейрокоинов списать?');
+            if (amount === null) return;
+
+            const numAmount = parseInt(amount);
+            if (isNaN(numAmount) || numAmount <= 0) {
+                alert('❌ Введите положительное число!');
+                return;
+            }
+
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            if (student.coins < numAmount) {
+                alert('❌ Недостаточно нейрокоинов!');
+                return;
+            }
+
+            const comment = prompt('Причина списания?') || 'Списание';
+            const newCoins = student.coins - numAmount;
+            const history = student.history || [];
+            history.push({
+                amount: -numAmount,
+                comment: comment,
+                date: new Date().toLocaleDateString('ru-RU')
+            });
+
+            const { error } = await supabase
+                .from('students')
+                .update({
+                    coins: newCoins,
+                    history: history
+                })
+                .eq('id', studentId);
+
+            if (error) {
+                alert('❌ Ошибка списания');
+                return;
+            }
+
+            student.coins = newCoins;
+            student.history = history;
+            renderStats();
+            renderStudents();
+            alert(`✅ Списано ${numAmount} нейрокоинов у ${student.name}`);
+        }
+
+        // Удаление ученика
+        async function deleteStudent(studentId) {
+            if (!confirm('Вы уверены, что хотите удалить ученика?')) return;
+
+            const student = students.find(s => s.id === studentId);
+            const { error } = await supabase
+                .from('students')
+                .delete()
+                .eq('id', studentId);
+
+            if (error) {
+                alert('❌ Ошибка удаления');
+                return;
+            }
+
+            students = students.filter(s => s.id !== studentId);
+            renderStats();
+            renderStudents();
+            alert(`❌ Ученик ${student.name} удален`);
+        }
+
+        // Добавление группы
+        async function addGroup() {
+            const name = document.getElementById('newGroupName').value.trim();
+            if (!name) {
+                alert('❌ Введите название группы!');
+                return;
+            }
+
+            if (groups.find(g => g.name === name)) {
+                alert('❌ Такая группа уже существует!');
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('groups')
+                .insert([{ name: name }])
+                .select()
+                .single();
+
+            if (error) {
+                alert('❌ Ошибка создания группы');
+                return;
+            }
+
+            groups.push(data);
+            document.getElementById('newGroupName').value = '';
+            renderGroupList();
+            renderGroupFilter();
+            alert('✅ Группа создана!');
+        }
+
+        // Удаление группы
+        async function deleteGroup(groupId) {
+            if (!confirm('Удалить группу? Все ученики в этой группе также будут удалены!')) return;
+
+            const group = groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            // Удаляем учеников из группы
+            const { error: studentsError } = await supabase
+                .from('students')
+                .delete()
+                .eq('group', group.name);
+
+            if (studentsError) {
+                alert('❌ Ошибка удаления учеников');
+                return;
+            }
+
+            // Удаляем группу
+            const { error: groupError } = await supabase
+                .from('groups')
+                .delete()
+                .eq('id', groupId);
+
+            if (groupError) {
+                alert('❌ Ошибка удаления группы');
+                return;
+            }
+
+            groups = groups.filter(g => g.id !== groupId);
+            students = students.filter(s => s.group !== group.name);
+            renderStats();
+            renderStudents();
+            renderGroupList();
+            renderGroupFilter();
+            alert('✅ Группа удалена');
+        }
+
+        // Фильтр по группе
+        function filterByGroup(group) {
+            currentFilter = group;
+            document.querySelectorAll('.group-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.group === group) btn.classList.add('active');
+            });
+            renderStudents();
+        }
+
+        // Показать историю
+        function showHistory(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            const modal = document.getElementById('historyModal');
+            const content = document.getElementById('historyContent');
+
+            let html = `<h3>📊 ${student.name}</h3>
+                       <p><strong>Группа:</strong> ${student.group}</p>
+                       <p><strong>Всего нейрокоинов:</strong> ${student.coins}</p>
+                       <hr style="margin:15px 0;">`;
+
+            if (student.history && student.history.length > 0) {
+                const sortedHistory = [...student.history].reverse();
+                sortedHistory.forEach(item => {
+                    const sign = item.amount > 0 ? '+' : '';
+                    const className = item.amount > 0 ? 'positive' : 'negative';
+                    html += `
+                        <div class="history-item">
+                            <div>
+                                <span class="amount ${className}">${sign}${item.amount}</span>
+                                <span> - ${item.comment}</span>
+                            </div>
+                            <div class="date">${item.date}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p style="color:#999;">История операций пуста</p>';
+            }
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+
+        // Рендер статистики
+        function renderStats() {
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalCoins').textContent = students.reduce((sum, s) => sum + s.coins, 0);
+            document.getElementById('totalGroups').textContent = groups.length;
+        }
+
+        // Рендер фильтра групп
+        function renderGroupFilter() {
+            const container = document.getElementById('groupFilter');
+            let html = `<button class="group-btn active" data-group="all" onclick="filterByGroup('all')">Все</button>`;
+            groups.forEach(g => {
+                html += `<button class="group-btn" data-group="${g.name}" onclick="filterByGroup('${g.name}')">${g.name}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Рендер списка групп
+        function renderGroupList() {
+            const container = document.getElementById('groupList');
+            if (groups.length === 0) {
+                container.innerHTML = '<p style="color:#999;">Групп пока нет</p>';
+                return;
+            }
+
+            let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;">';
+            groups.forEach(g => {
+                const count = students.filter(s => s.group === g.name).length;
+                html += `
+                    <div style="background:white;padding:10px 15px;border-radius:15px;border:2px solid #eef2ff;display:flex;align-items:center;gap:10px;">
+                        <span>${g.name}</span>
+                        <span style="color:#025FEB;">(${count} уч.)</span>
+                        <button class="btn btn-danger" style="padding:4px 10px;font-size:0.8em;" onclick="deleteGroup(${g.id})">🗑️</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Рендер списка учеников
+        function renderStudents() {
+            const container = document.getElementById('studentsList');
+            
+            let filtered = students;
+            if (currentFilter !== 'all') {
+                filtered = students.filter(s => s.group === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📚</div>
+                        <h3>Нет учеников</h3>
+                        <p>Добавьте учеников через форму выше</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Сортируем по количеству нейрокоинов
+            const sorted = [...filtered].sort((a, b) => b.coins - a.coins);
+
+            let html = '<div class="student-list">';
+            sorted.forEach((s, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                html += `
+                    <div class="student-item">
+                        <div class="student-info">
+                            <span style="font-size:1.2em;font-weight:700;color:#025FEB;min-width:40px;">${medal}</span>
+                            <span class="student-name">${s.name}</span>
+                            <span style="color:#999;font-size:0.9em;">${s.group}</span>
+                            <span class="student-coins">🪙 ${s.coins}</span>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-success" onclick="addCoins(${s.id})">➕</button>
+                            <button class="btn btn-danger" onclick="subtractCoins(${s.id})">➖</button>
+                            <button class="btn btn-secondary" onclick="showHistory(${s.id})">📜</button>
+                            <button class="btn btn-danger" onclick="deleteStudent(${s.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Закрытие модалки по клику вне
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('historyModal');
+            if (e.target === modal) closeHistory();
+        });
+
+        // Инициализация
+        checkAuth();
+    </script>
+</body>
+</html>
