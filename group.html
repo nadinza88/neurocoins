@@ -331,7 +331,7 @@
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Поиск ученика по имени..." oninput="renderRating()">
+            <input type="text" id="searchInput" placeholder="Поиск ученика по имени..." oninput="renderRating()">
         </div>
 
         <div class="group-selector" id="groupSelector">
@@ -423,7 +423,7 @@
                             <img src="https://i.postimg.cc/prP9Rczb/Chat-GPT-Image-31-iul-2025-g-15-52-38.png" alt="Логотип клуба">
                         </div>
                         <div class="name">${top.name}</div>
-                        <div class="coins">🪙 ${top.coins} нейрокоинов</div>
+                        <div class="coins">${top.coins} нейрокоинов</div>
                         <div class="group">Группа: ${top.group_name}</div>
                     </div>
                 `;
@@ -451,7 +451,7 @@
                         <td class="rank">${medal}</td>
                         <td class="student-name">${s.name}</td>
                         <td><span class="group-tag">${s.group_name}</span></td>
-                        <td class="coins">🪙 ${s.coins}</td>
+                        <td class="coins">${s.coins}</td>
                     </tr>
                 `;
             });
