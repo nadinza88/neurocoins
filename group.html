@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рейтинг клуба - Нейрокоины</title>
+    <title>Рейтинг клуба Нейроджимми</title>
     <style>
         * {
             margin: 0;
@@ -44,6 +44,13 @@
             background-clip: text;
         }
 
+        .header h1 span {
+            font-size: 0.7em;
+            display: block;
+            color: #666;
+            -webkit-text-fill-color: #666;
+        }
+
         .back-btn {
             display: inline-block;
             padding: 10px 25px;
@@ -60,23 +67,43 @@
             transform: scale(1.05);
         }
 
+        /* Поиск */
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #dfe6e9;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #025FEB;
+        }
+
         .group-selector {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             justify-content: center;
         }
 
         .group-btn {
-            padding: 12px 25px;
+            padding: 10px 20px;
             border: 2px solid #dfe6e9;
             border-radius: 50px;
             background: white;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
-            font-size: 1em;
+            font-size: 0.95em;
             font-family: inherit;
         }
 
@@ -151,12 +178,14 @@
             font-weight: 600;
         }
 
+        /* Топ ученик - голубой фон вместо оранжевого */
         .top-student {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            background: linear-gradient(135deg, #e8f4ff 0%, #b3d9ff 100%);
             padding: 25px;
             border-radius: 20px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            border: 2px solid #025FEB20;
         }
 
         .top-student .crown {
@@ -164,18 +193,18 @@
         }
 
         .top-student .crown img {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 3px solid #025FEB;
+            box-shadow: 0 5px 15px rgba(2, 95, 235, 0.3);
         }
 
         .top-student .name {
             font-size: 1.8em;
             font-weight: 700;
-            color: #2d3436;
+            color: #025FEB;
         }
 
         .top-student .coins {
@@ -206,6 +235,13 @@
             color: #999;
         }
 
+        .results-count {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -215,18 +251,22 @@
                 font-size: 1.5em;
             }
 
+            .header h1 span {
+                font-size: 0.6em;
+            }
+
             .rating-table {
-                font-size: 0.9em;
+                font-size: 0.85em;
             }
 
             .rating-table th,
             .rating-table td {
-                padding: 10px;
+                padding: 10px 8px;
             }
 
             .group-btn {
-                padding: 10px 15px;
-                font-size: 0.9em;
+                padding: 8px 14px;
+                font-size: 0.85em;
             }
 
             .top-student .name {
@@ -234,8 +274,33 @@
             }
 
             .top-student .crown img {
-                width: 50px;
-                height: 50px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .search-box input {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .rating-table th,
+            .rating-table td {
+                padding: 8px 5px;
+                font-size: 0.8em;
+            }
+
+            .rating-table .rank {
+                font-size: 1em;
             }
         }
     </style>
@@ -243,8 +308,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏆 Рейтинг клуба</h1>
+            <h1>
+                🧠 Рейтинг клуба
+                <span>Нейроджимми</span>
+            </h1>
             <a href="index.html" class="back-btn">← На главную</a>
+        </div>
+
+        <!-- Поиск по имени -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск ученика по имени..." oninput="renderRating()">
         </div>
 
         <div class="group-selector" id="groupSelector">
@@ -311,28 +384,46 @@
         function renderRating() {
             const container = document.getElementById('ratingContent');
             const topContainer = document.getElementById('topStudent');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
 
+            // Фильтруем по группе
             let filtered = currentGroup === 'all' ? students : students.filter(s => s.group_name === currentGroup);
 
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="icon">📚</div><h3>Нет учеников</h3></div>`;
+            // Фильтруем по поиску
+            if (searchQuery) {
+                filtered = filtered.filter(s => s.name.toLowerCase().includes(searchQuery));
+            }
+
+            // Сортируем по убыванию (уже отсортированы из БД)
+            const sorted = [...filtered];
+
+            if (sorted.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>Ничего не найдено</h3><p>Попробуйте изменить поиск</p></div>`;
                 topContainer.innerHTML = '';
                 return;
             }
 
-            const top = filtered[0];
-            topContainer.innerHTML = `
-                <div class="top-student">
-                    <div class="crown">
-                        <img src="https://i.postimg.cc/prP9Rczb/Chat-GPT-Image-31-iul-2025-g-15-52-38.png" alt="Логотип клуба">
-                    </div>
-                    <div class="name">${top.name}</div>
-                    <div class="coins">🪙 ${top.coins} нейрокоинов</div>
-                    <div class="group">Группа: ${top.group_name}</div>
-                </div>
-            `;
+            // Показываем количество найденных
+            const countHtml = `<div class="results-count">Найдено: ${sorted.length} учеников</div>`;
 
-            let html = `
+            // Топ ученик (только если нет поиска и выбрана конкретная группа)
+            if (!searchQuery && currentGroup !== 'all') {
+                const top = sorted[0];
+                topContainer.innerHTML = `
+                    <div class="top-student">
+                        <div class="crown">
+                            <img src="https://i.postimg.cc/prP9Rczb/Chat-GPT-Image-31-iul-2025-g-15-52-38.png" alt="Логотип клуба">
+                        </div>
+                        <div class="name">${top.name}</div>
+                        <div class="coins">🪙 ${top.coins} нейрокоинов</div>
+                        <div class="group">Группа: ${top.group_name}</div>
+                    </div>
+                `;
+            } else {
+                topContainer.innerHTML = '';
+            }
+
+            let html = countHtml + `
                 <table class="rating-table">
                     <thead>
                         <tr>
@@ -345,7 +436,7 @@
                     <tbody>
             `;
 
-            filtered.forEach((s, index) => {
+            sorted.forEach((s, index) => {
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
                 html += `
                     <tr>
@@ -361,6 +452,7 @@
             container.innerHTML = html;
         }
 
+        // Автообновление каждые 30 секунд
         setInterval(loadData, 30000);
         loadData();
     </script>
