@@ -11,7 +11,7 @@
             box-sizing: border-box;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #025FEB 0%, #00C3FA 100%);
             min-height: 100vh;
             padding: 20px;
@@ -56,17 +56,36 @@
             background: #025FEB;
             color: white;
         }
+        .btn-primary:hover {
+            background: #1a47b8;
+        }
         .btn-danger {
             background: #ff6b6b;
             color: white;
+        }
+        .btn-danger:hover {
+            background: #ee5a24;
         }
         .btn-success {
             background: #00b894;
             color: white;
         }
+        .btn-success:hover {
+            background: #00a381;
+        }
         .btn-secondary {
             background: #dfe6e9;
             color: #2d3436;
+        }
+        .btn-secondary:hover {
+            background: #b2bec3;
+        }
+        .btn-warning {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+        .btn-warning:hover {
+            background: #f9a825;
         }
         .btn-home {
             background: #025FEB;
@@ -95,11 +114,17 @@
         .student-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px;
+            padding: 12px 15px;
             border-bottom: 1px solid #dfe6e9;
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
+            background: #f8faff;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        .student-item:hover {
+            background: #eef2ff;
         }
         .student-actions {
             display: flex;
@@ -107,7 +132,7 @@
             flex-wrap: wrap;
         }
         .student-actions .btn {
-            padding: 5px 10px;
+            padding: 5px 12px;
             font-size: 12px;
         }
         .login-form {
@@ -129,12 +154,6 @@
             color: #025FEB;
             margin-bottom: 20px;
         }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -144,6 +163,22 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+        }
+        .edit-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .edit-form input {
+            padding: 5px 10px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .edit-form .btn {
+            padding: 5px 12px;
+            font-size: 12px;
         }
         @media (max-width: 600px) {
             .form-row {
@@ -313,6 +348,47 @@
             }
         }
 
+        // Функция для автоматического добавления группы
+        async function ensureGroupExists(groupName) {
+            // Проверяем, есть ли уже такая группа
+            const { data: existing, error } = await sb
+                .from('groups')
+                .select('id')
+                .eq('name', groupName)
+                .maybeSingle();
+
+            if (error) {
+                console.error('Ошибка проверки группы:', error);
+                return false;
+            }
+
+            // Если группы нет - создаём
+            if (!existing) {
+                const { error: insertError } = await sb
+                    .from('groups')
+                    .insert([{ name: groupName }]);
+
+                if (insertError) {
+                    console.error('Ошибка создания группы:', insertError);
+                    return false;
+                }
+                
+                // Обновляем список групп
+                const { data: newGroups } = await sb
+                    .from('groups')
+                    .select('*')
+                    .order('name');
+                    
+                if (newGroups) {
+                    groups = newGroups;
+                }
+                
+                return true;
+            }
+            
+            return true;
+        }
+
         async function addStudent(event) {
             event.preventDefault();
             const name = document.getElementById('studentName').value.trim();
@@ -326,6 +402,9 @@
             }
 
             try {
+                // Сначала создаём группу, если её нет
+                await ensureGroupExists(group);
+
                 const newStudent = {
                     name: name,
                     group_name: group,
@@ -346,11 +425,43 @@
                 document.getElementById('studentCoins').value = 0;
 
                 renderStudents();
-                showSuccess('✅ Ученик добавлен!');
+                showSuccess(`✅ Ученик "${name}" добавлен! Группа "${group}" создана`);
 
             } catch (error) {
                 showError('Ошибка добавления: ' + error.message);
                 alert('❌ Ошибка добавления ученика');
+            }
+        }
+
+        // Редактирование имени ученика
+        async function editStudentName(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            const newName = prompt('Введите новое имя ученика:', student.name);
+            if (newName === null) return;
+            
+            const trimmedName = newName.trim();
+            if (!trimmedName) {
+                alert('❌ Имя не может быть пустым!');
+                return;
+            }
+
+            try {
+                const { error } = await sb
+                    .from('students')
+                    .update({ name: trimmedName })
+                    .eq('id', studentId);
+
+                if (error) throw error;
+
+                student.name = trimmedName;
+                renderStudents();
+                showSuccess(`✅ Имя изменено на "${trimmedName}"`);
+
+            } catch (error) {
+                showError('Ошибка редактирования: ' + error.message);
+                alert('❌ Ошибка изменения имени');
             }
         }
 
@@ -466,12 +577,13 @@
                 html += `
                     <div class="student-item">
                         <div>
-                            <span style="font-weight:700;color:#025FEB;">${medal}</span>
+                            <span style="font-weight:700;color:#025FEB;min-width:30px;display:inline-block;">${medal}</span>
                             <strong>${s.name}</strong>
                             <span style="color:#999;font-size:0.9em;margin:0 10px;">${s.group_name}</span>
-                            <span style="color:#00b894;font-weight:700;">🪙 ${s.coins}</span>
+                            <span style="color:#00b894;font-weight:700;">${s.coins}</span>
                         </div>
                         <div class="student-actions">
+                            <button class="btn btn-warning" onclick="editStudentName(${s.id})" title="Редактировать имя">✏️</button>
                             <button class="btn btn-success" onclick="addCoins(${s.id})">➕</button>
                             <button class="btn btn-danger" onclick="subtractCoins(${s.id})">➖</button>
                             <button class="btn btn-secondary" onclick="showHistory(${s.id})">📜</button>
