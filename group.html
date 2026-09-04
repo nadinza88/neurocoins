@@ -307,8 +307,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // 🔑 Настройки Supabase (ТЕ ЖЕ, ЧТО И В ADMIN)
-        const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co';
+        // ============================================
+        const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co/';
         const MY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnBrZnFsZ3dydWtsemFubXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDYxODYsImV4cCI6MjEwNDEyMjE4Nn0.1B8WzdGP6tAdWJxp0pYEgxBsmLXIeEXBgJ7BLWfm-ag';
+        // ============================================
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         let students = [];
