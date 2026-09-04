@@ -36,6 +36,20 @@
             gap: 15px;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #025FEB;
+        }
+
         .header h1 {
             font-size: 2em;
             background: linear-gradient(135deg, #025FEB, #00C3FA);
@@ -44,11 +58,13 @@
             background-clip: text;
         }
 
-        .header h1 span {
-            font-size: 0.7em;
+        .header h1 .sub {
+            font-size: 0.55em;
             display: block;
-            color: #666;
-            -webkit-text-fill-color: #666;
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .back-btn {
@@ -67,7 +83,6 @@
             transform: scale(1.05);
         }
 
-        /* Поиск */
         .search-box {
             margin-bottom: 20px;
         }
@@ -178,7 +193,6 @@
             font-weight: 600;
         }
 
-        /* Топ ученик - голубой фон вместо оранжевого */
         .top-student {
             background: linear-gradient(135deg, #e8f4ff 0%, #b3d9ff 100%);
             padding: 25px;
@@ -235,24 +249,26 @@
             color: #999;
         }
 
-        .results-count {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
+            }
+
+            .header-left {
+                gap: 10px;
+            }
+
+            .header-logo {
+                width: 40px;
+                height: 40px;
             }
 
             .header h1 {
                 font-size: 1.5em;
             }
 
-            .header h1 span {
-                font-size: 0.6em;
+            .header h1 .sub {
+                font-size: 0.5em;
             }
 
             .rating-table {
@@ -308,14 +324,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>
-                🧠 Рейтинг клуба
-                <span>Нейроджимми</span>
-            </h1>
+            <div class="header-left">
+                <img src="https://i.postimg.cc/prP9Rczb/Chat-GPT-Image-31-iul-2025-g-15-52-38.png" alt="Логотип" class="header-logo">
+                <h1>
+                    Рейтинг клуба
+                    <span class="sub">Нейроджимми</span>
+                </h1>
+            </div>
             <a href="index.html" class="back-btn">← На главную</a>
         </div>
 
-        <!-- Поиск по имени -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 Поиск ученика по имени..." oninput="renderRating()">
         </div>
@@ -386,15 +404,12 @@
             const topContainer = document.getElementById('topStudent');
             const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
 
-            // Фильтруем по группе
             let filtered = currentGroup === 'all' ? students : students.filter(s => s.group_name === currentGroup);
 
-            // Фильтруем по поиску
             if (searchQuery) {
                 filtered = filtered.filter(s => s.name.toLowerCase().includes(searchQuery));
             }
 
-            // Сортируем по убыванию (уже отсортированы из БД)
             const sorted = [...filtered];
 
             if (sorted.length === 0) {
@@ -402,9 +417,6 @@
                 topContainer.innerHTML = '';
                 return;
             }
-
-            // Показываем количество найденных
-            const countHtml = `<div class="results-count">Найдено: ${sorted.length} учеников</div>`;
 
             // Топ ученик (только если нет поиска и выбрана конкретная группа)
             if (!searchQuery && currentGroup !== 'all') {
@@ -423,7 +435,7 @@
                 topContainer.innerHTML = '';
             }
 
-            let html = countHtml + `
+            let html = `
                 <table class="rating-table">
                     <thead>
                         <tr>
@@ -452,7 +464,6 @@
             container.innerHTML = html;
         }
 
-        // Автообновление каждые 30 секунд
         setInterval(loadData, 30000);
         loadData();
     </script>
