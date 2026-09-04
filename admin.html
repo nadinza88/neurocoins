@@ -3,265 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рейтинг клуба - Нейрокоины</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Панель педагога - Нейрокоины</title>
     <style>
-        @font-face {
-            font-family: 'Nozhik';
-            src: local('Nozhik'), local('Arial');
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #025FEB 0%, #00C3FA 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 30px;
             padding: 30px;
             box-shadow: 0 30px 80px rgba(2, 95, 235, 0.2);
-            animation: fadeIn 0.6s ease-out;
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        h1 {
+            color: #025FEB;
+            margin-bottom: 20px;
         }
-
-        .header {
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #025FEB;
+            color: white;
+        }
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        .btn-success {
+            background: #00b894;
+            color: white;
+        }
+        .btn-secondary {
+            background: #dfe6e9;
+            color: #2d3436;
+        }
+        .btn-home {
+            background: #025FEB;
+            color: white;
+        }
+        .btn-home:hover {
+            background: #1a47b8;
+        }
+        .error-message {
+            background: #ffe0e0;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .student-list {
+            margin-top: 20px;
+        }
+        .student-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            padding: 10px;
+            border-bottom: 1px solid #dfe6e9;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
+            align-items: center;
         }
-
-        .header h1 {
-            font-size: 2em;
-            background: linear-gradient(135deg, #025FEB, #00C3FA);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .student-actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
         }
-
-        .back-btn {
-            display: inline-block;
-            padding: 10px 25px;
-            background: #f8faff;
+        .student-actions .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+        }
+        .login-form h2 {
+            text-align: center;
             color: #025FEB;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s;
         }
-
-        .back-btn:hover {
-            background: #eef2ff;
-            transform: scale(1.05);
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
         }
-
-        .group-selector {
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .header-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 30px;
-            justify-content: center;
         }
-
-        .group-btn {
-            padding: 12px 25px;
-            border: 2px solid #dfe6e9;
-            border-radius: 50px;
-            background: white;
-            cursor: pointer;
-            font-family: 'Nozhik', 'Montserrat', sans-serif;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 1em;
-        }
-
-        .group-btn.active {
-            background: linear-gradient(135deg, #025FEB, #00C3FA);
-            color: white;
-            border-color: #025FEB;
-        }
-
-        .group-btn:hover {
-            border-color: #025FEB;
-            transform: translateY(-2px);
-        }
-
-        .rating-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .rating-table th {
-            background: linear-gradient(135deg, #025FEB, #00C3FA);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .rating-table th:first-child {
-            border-radius: 15px 0 0 0;
-        }
-
-        .rating-table th:last-child {
-            border-radius: 0 15px 0 0;
-        }
-
-        .rating-table td {
-            padding: 15px;
-            border-bottom: 2px solid #f8faff;
-        }
-
-        .rating-table tr:hover {
-            background: #f8faff;
-        }
-
-        .rating-table .rank {
-            font-weight: 700;
-            color: #025FEB;
-            font-size: 1.2em;
-            text-align: center;
-        }
-
-        .rating-table .student-name {
-            font-weight: 600;
-            color: #2d3436;
-        }
-
-        .rating-table .coins {
-            font-weight: 700;
-            color: #00b894;
-            font-size: 1.1em;
-            text-align: right;
-        }
-
-        .rating-table .group-tag {
-            display: inline-block;
-            padding: 3px 12px;
-            background: #eef2ff;
-            color: #025FEB;
-            border-radius: 50px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        .top-student {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .top-student .crown {
-            font-size: 3em;
-        }
-
-        .top-student .name {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #2d3436;
-        }
-
-        .top-student .coins {
-            font-size: 1.3em;
-            color: #2d3436;
-        }
-
-        .top-student .group {
-            font-size: 1em;
-            color: #555;
-            margin-top: 5px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .empty-state .icon {
-            font-size: 4em;
-            margin-bottom: 10px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
             .container {
                 padding: 15px;
-            }
-
-            .header h1 {
-                font-size: 1.5em;
-            }
-
-            .rating-table {
-                font-size: 0.9em;
-            }
-
-            .rating-table th,
-            .rating-table td {
-                padding: 10px;
-            }
-
-            .group-btn {
-                padding: 10px 15px;
-                font-size: 0.9em;
-            }
-
-            .top-student .name {
-                font-size: 1.3em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏆 Рейтинг клуба</h1>
-            <a href="index.html" class="back-btn">← На главную</a>
+    <!-- Форма входа -->
+    <div id="loginForm">
+        <div class="login-form">
+            <h2>👩‍🏫 Вход для педагога</h2>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="passwordInput" placeholder="Введите пароль" onkeypress="if(event.key==='Enter') login()">
+            </div>
+            <button class="btn btn-primary" onclick="login()" style="width:100%;">Войти</button>
+            <p style="text-align:center;margin-top:15px;color:#999;">Пароль: 123456</p>
         </div>
+    </div>
 
-        <!-- Выбор группы -->
-        <div class="group-selector" id="groupSelector">
-            <button class="group-btn active" onclick="selectGroup('all')">👥 Все группы</button>
-        </div>
+    <!-- Основной интерфейс -->
+    <div id="mainContent" style="display:none;">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+                <h1>👩‍🏫 Панель педагога</h1>
+                <div class="header-actions">
+                    <a href="index.html" class="btn btn-home">🏠 На главную</a>
+                    <button class="btn btn-secondary" onclick="logout()">🚪 Выйти</button>
+                </div>
+            </div>
 
-        <!-- Топ ученик -->
-        <div id="topStudent"></div>
+            <div id="statusMessage"></div>
 
-        <!-- Таблица рейтинга -->
-        <div id="ratingContent">
-            <div class="loading">Загрузка...</div>
+            <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
+                <h3>➕ Добавить ученика</h3>
+                <form id="studentForm" onsubmit="addStudent(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Имя ученика *</label>
+                            <input type="text" id="studentName" required placeholder="Иван Петров">
+                        </div>
+                        <div class="form-group">
+                            <label>Группа *</label>
+                            <input type="text" id="studentGroup" required placeholder="Группа А">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Начальные монеты</label>
+                            <input type="number" id="studentCoins" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Комментарий</label>
+                            <input type="text" id="studentComment" placeholder="За что начислены">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">➕ Добавить ученика</button>
+                </form>
+            </div>
+
+            <div style="background:#f8faff;padding:20px;border-radius:15px;">
+                <h3>👨‍🎓 Список учеников</h3>
+                <div id="studentsList">
+                    <p>Загрузка...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -274,17 +219,74 @@
         const MY_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiYnBrZnFsZ3dydWtsemFubXd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NDYxODYsImV4cCI6MjEwNDEyMjE4Nn0.1B8WzdGP6tAdWJxp0pYEgxBsmLXIeEXBgJ7BLWfm-ag';
         // ============================================
 
-        const supabaseClient = supabase.createClient(MY_SUPABASE_URL, MY_SUPABASE_KEY);
+        const ADMIN_PASSWORD = '123456';
         let students = [];
         let groups = [];
-        let currentGroup = 'all';
+        const sb = supabase.createClient(MY_SUPABASE_URL, MY_SUPABASE_KEY);
 
-        // Загрузка данных
+        checkConnection();
+
+        async function checkConnection() {
+            try {
+                const { data, error } = await sb.from('students').select('*').limit(1);
+                if (error) {
+                    showError('Ошибка подключения: ' + error.message);
+                    return;
+                }
+                checkAuth();
+            } catch (e) {
+                showError('❌ Ошибка: ' + e.message);
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('statusMessage');
+            el.innerHTML = `<div class="error-message">❌ ${msg}</div>`;
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('statusMessage');
+            el.innerHTML = `<div class="success-message">✅ ${msg}</div>`;
+        }
+
+        function checkAuth() {
+            const saved = localStorage.getItem('teacherAuth');
+            if (saved === 'true') {
+                showMainContent();
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+            }
+        }
+
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('teacherAuth', 'true');
+                showMainContent();
+            } else {
+                alert('❌ Неверный пароль!');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('teacherAuth');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        async function showMainContent() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            await loadData();
+        }
+
         async function loadData() {
             try {
                 const [studentsRes, groupsRes] = await Promise.all([
-                    supabaseClient.from('students').select('*').order('coins', { ascending: false }),
-                    supabaseClient.from('groups').select('*').order('name')
+                    sb.from('students').select('*').order('coins', { ascending: false }),
+                    sb.from('groups').select('*').order('name')
                 ]);
 
                 if (studentsRes.error) throw studentsRes.error;
@@ -293,117 +295,204 @@
                 students = studentsRes.data || [];
                 groups = groupsRes.data || [];
 
-                renderGroupSelector();
-                renderRating();
+                renderStudents();
 
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                document.getElementById('ratingContent').innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">⚠️</div>
-                        <h3>Ошибка загрузки данных</h3>
-                        <p>Проверьте подключение к интернету</p>
-                    </div>
-                `;
+                showError('Ошибка загрузки: ' + error.message);
             }
         }
 
-        // Выбор группы
-        function selectGroup(group) {
-            currentGroup = group;
-            document.querySelectorAll('.group-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.group === group) btn.classList.add('active');
-            });
-            renderRating();
-        }
+        async function addStudent(event) {
+            event.preventDefault();
+            const name = document.getElementById('studentName').value.trim();
+            const group = document.getElementById('studentGroup').value.trim();
+            const coins = parseInt(document.getElementById('studentCoins').value) || 0;
+            const comment = document.getElementById('studentComment').value.trim() || 'Первое начисление';
 
-        // Рендер выбора группы
-        function renderGroupSelector() {
-            const container = document.getElementById('groupSelector');
-            let html = `<button class="group-btn active" data-group="all" onclick="selectGroup('all')">👥 Все группы</button>`;
-            
-            // Собираем уникальные группы из учеников
-            const uniqueGroups = [...new Set(students.map(s => s.group_name))];
-            
-            uniqueGroups.forEach(groupName => {
-                const count = students.filter(s => s.group_name === groupName).length;
-                html += `<button class="group-btn" data-group="${groupName}" onclick="selectGroup('${groupName}')">${groupName} (${count})</button>`;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        // Рендер рейтинга
-        function renderRating() {
-            const container = document.getElementById('ratingContent');
-            const topContainer = document.getElementById('topStudent');
-
-            let filtered = students;
-            if (currentGroup !== 'all') {
-                filtered = students.filter(s => s.group_name === currentGroup);
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📚</div>
-                        <h3>В этой группе пока нет учеников</h3>
-                    </div>
-                `;
-                topContainer.innerHTML = '';
+            if (!name || !group) {
+                alert('❌ Заполните имя и группу!');
                 return;
             }
 
-            // Сортируем по убыванию
-            const sorted = [...filtered].sort((a, b) => b.coins - a.coins);
+            try {
+                const newStudent = {
+                    name: name,
+                    group_name: group,
+                    coins: coins,
+                    history: [{ amount: coins, comment: comment, date: new Date().toLocaleDateString('ru-RU') }]
+                };
 
-            // Топ ученик
-            const top = sorted[0];
-            topContainer.innerHTML = `
-                <div class="top-student">
-                    <div class="crown">👑</div>
-                    <div class="name">${top.name}</div>
-                    <div class="coins">🪙 ${top.coins} нейрокоинов</div>
-                    <div class="group">Группа: ${top.group_name}</div>
-                </div>
-            `;
+                const { data, error } = await sb
+                    .from('students')
+                    .insert([newStudent])
+                    .select()
+                    .single();
 
-            // Таблица
-            let html = `
-                <table class="rating-table">
-                    <thead>
-                        <tr>
-                            <th style="width:60px;">🏅</th>
-                            <th>👤 Ученик</th>
-                            <th>📚 Группа</th>
-                            <th style="text-align:right;">🪙 Нейрокоины</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+                if (error) throw error;
 
+                students.push(data);
+                document.getElementById('studentForm').reset();
+                document.getElementById('studentCoins').value = 0;
+
+                renderStudents();
+                showSuccess('✅ Ученик добавлен!');
+
+            } catch (error) {
+                showError('Ошибка добавления: ' + error.message);
+                alert('❌ Ошибка добавления ученика');
+            }
+        }
+
+        async function addCoins(studentId) {
+            const amount = prompt('Сколько нейрокоинов начислить?');
+            if (amount === null) return;
+            const numAmount = parseInt(amount);
+            if (isNaN(numAmount) || numAmount <= 0) {
+                alert('❌ Введите положительное число!');
+                return;
+            }
+
+            const comment = prompt('За что начисляем?') || 'Начисление';
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            try {
+                const newCoins = student.coins + numAmount;
+                const history = student.history || [];
+                history.push({ amount: numAmount, comment: comment, date: new Date().toLocaleDateString('ru-RU') });
+
+                const { error } = await sb
+                    .from('students')
+                    .update({ coins: newCoins, history: history })
+                    .eq('id', studentId);
+
+                if (error) throw error;
+
+                student.coins = newCoins;
+                student.history = history;
+                renderStudents();
+                alert(`✅ Начислено ${numAmount} нейрокоинов`);
+
+            } catch (error) {
+                showError('Ошибка начисления: ' + error.message);
+            }
+        }
+
+        async function subtractCoins(studentId) {
+            const amount = prompt('Сколько нейрокоинов списать?');
+            if (amount === null) return;
+            const numAmount = parseInt(amount);
+            if (isNaN(numAmount) || numAmount <= 0) {
+                alert('❌ Введите положительное число!');
+                return;
+            }
+
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            if (student.coins < numAmount) {
+                alert('❌ Недостаточно нейрокоинов!');
+                return;
+            }
+
+            const comment = prompt('Причина списания?') || 'Списание';
+
+            try {
+                const newCoins = student.coins - numAmount;
+                const history = student.history || [];
+                history.push({ amount: -numAmount, comment: comment, date: new Date().toLocaleDateString('ru-RU') });
+
+                const { error } = await sb
+                    .from('students')
+                    .update({ coins: newCoins, history: history })
+                    .eq('id', studentId);
+
+                if (error) throw error;
+
+                student.coins = newCoins;
+                student.history = history;
+                renderStudents();
+                alert(`✅ Списано ${numAmount} нейрокоинов`);
+
+            } catch (error) {
+                showError('Ошибка списания: ' + error.message);
+            }
+        }
+
+        async function deleteStudent(studentId) {
+            if (!confirm('Вы уверены, что хотите удалить ученика?')) return;
+
+            const student = students.find(s => s.id === studentId);
+            try {
+                const { error } = await sb
+                    .from('students')
+                    .delete()
+                    .eq('id', studentId);
+
+                if (error) throw error;
+
+                students = students.filter(s => s.id !== studentId);
+                renderStudents();
+                alert(`❌ Ученик удален`);
+
+            } catch (error) {
+                showError('Ошибка удаления: ' + error.message);
+            }
+        }
+
+        function renderStudents() {
+            const container = document.getElementById('studentsList');
+
+            if (students.length === 0) {
+                container.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">Нет учеников</p>';
+                return;
+            }
+
+            const sorted = [...students].sort((a, b) => b.coins - a.coins);
+            let html = '<div class="student-list">';
             sorted.forEach((s, index) => {
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
                 html += `
-                    <tr>
-                        <td class="rank">${medal}</td>
-                        <td class="student-name">${s.name}</td>
-                        <td><span class="group-tag">${s.group_name}</span></td>
-                        <td class="coins">🪙 ${s.coins}</td>
-                    </tr>
+                    <div class="student-item">
+                        <div>
+                            <span style="font-weight:700;color:#025FEB;">${medal}</span>
+                            <strong>${s.name}</strong>
+                            <span style="color:#999;font-size:0.9em;margin:0 10px;">${s.group_name}</span>
+                            <span style="color:#00b894;font-weight:700;">🪙 ${s.coins}</span>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-success" onclick="addCoins(${s.id})">➕</button>
+                            <button class="btn btn-danger" onclick="subtractCoins(${s.id})">➖</button>
+                            <button class="btn btn-secondary" onclick="showHistory(${s.id})">📜</button>
+                            <button class="btn btn-danger" onclick="deleteStudent(${s.id})">🗑️</button>
+                        </div>
+                    </div>
                 `;
             });
-
-            html += '</tbody></table>';
+            html += '</div>';
             container.innerHTML = html;
         }
 
-        // Автообновление каждые 30 секунд
-        setInterval(loadData, 30000);
+        function showHistory(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
 
-        // Инициализация
-        loadData();
+            let msg = `📊 История ${student.name}\n`;
+            msg += `Всего монет: ${student.coins}\n`;
+            msg += '━'.repeat(30) + '\n';
+
+            if (student.history && student.history.length > 0) {
+                const sorted = [...student.history].reverse();
+                sorted.forEach(item => {
+                    const sign = item.amount > 0 ? '+' : '';
+                    msg += `${item.date} ${sign}${item.amount} - ${item.comment}\n`;
+                });
+            } else {
+                msg += 'История пуста';
+            }
+
+            alert(msg);
+        }
     </script>
 </body>
 </html>
