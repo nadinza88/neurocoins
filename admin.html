@@ -44,13 +44,18 @@
             font-size: 16px;
         }
         .btn {
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
             text-decoration: none;
             display: inline-block;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
         }
         .btn-primary {
             background: #025FEB;
@@ -133,7 +138,7 @@
         }
         .student-actions .btn {
             padding: 5px 12px;
-            font-size: 12px;
+            font-size: 13px;
         }
         .login-form {
             max-width: 400px;
@@ -164,28 +169,19 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-        .edit-form {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .edit-form input {
-            padding: 5px 10px;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .edit-form .btn {
-            padding: 5px 12px;
-            font-size: 12px;
-        }
         @media (max-width: 600px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
             .container {
                 padding: 15px;
+            }
+            .student-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .student-actions {
+                justify-content: center;
             }
         }
     </style>
@@ -240,7 +236,7 @@
                             <input type="text" id="studentComment" placeholder="За что начислены">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%;">➕ Добавить ученика</button>
+                    <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;">➕ Добавить ученика</button>
                 </form>
             </div>
 
@@ -350,7 +346,6 @@
 
         // Функция для автоматического добавления группы
         async function ensureGroupExists(groupName) {
-            // Проверяем, есть ли уже такая группа
             const { data: existing, error } = await sb
                 .from('groups')
                 .select('id')
@@ -362,7 +357,6 @@
                 return false;
             }
 
-            // Если группы нет - создаём
             if (!existing) {
                 const { error: insertError } = await sb
                     .from('groups')
@@ -373,7 +367,6 @@
                     return false;
                 }
                 
-                // Обновляем список групп
                 const { data: newGroups } = await sb
                     .from('groups')
                     .select('*')
@@ -402,7 +395,6 @@
             }
 
             try {
-                // Сначала создаём группу, если её нет
                 await ensureGroupExists(group);
 
                 const newStudent = {
@@ -425,7 +417,7 @@
                 document.getElementById('studentCoins').value = 0;
 
                 renderStudents();
-                showSuccess(`✅ Ученик "${name}" добавлен! Группа "${group}" создана`);
+                showSuccess(`✅ Ученик "${name}" добавлен!`);
 
             } catch (error) {
                 showError('Ошибка добавления: ' + error.message);
@@ -584,10 +576,10 @@
                         </div>
                         <div class="student-actions">
                             <button class="btn btn-warning" onclick="editStudentName(${s.id})" title="Редактировать имя">✏️</button>
-                            <button class="btn btn-success" onclick="addCoins(${s.id})">➕</button>
-                            <button class="btn btn-danger" onclick="subtractCoins(${s.id})">➖</button>
-                            <button class="btn btn-secondary" onclick="showHistory(${s.id})">📜</button>
-                            <button class="btn btn-danger" onclick="deleteStudent(${s.id})">🗑️</button>
+                            <button class="btn btn-success" onclick="addCoins(${s.id})" title="Начислить монеты">➕</button>
+                            <button class="btn btn-danger" onclick="subtractCoins(${s.id})" title="Списать монеты">➖</button>
+                            <button class="btn btn-secondary" onclick="showHistory(${s.id})" title="История">📜</button>
+                            <button class="btn btn-danger" onclick="deleteStudent(${s.id})" title="Удалить">🗑️</button>
                         </div>
                     </div>
                 `;
