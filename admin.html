@@ -134,71 +134,69 @@
     </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Форма входа -->
-        <div id="loginForm">
-            <div class="login-form">
-                <h2>👩‍🏫 Вход для педагога</h2>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="passwordInput" placeholder="Введите пароль" onkeypress="if(event.key==='Enter') login()">
-                </div>
-                <button class="btn btn-primary" onclick="login()" style="width:100%;">Войти</button>
-                <p style="text-align:center;margin-top:15px;color:#999;">Пароль: 123456</p>
+    <!-- Форма входа -->
+    <div id="loginForm">
+        <div class="login-form">
+            <h2>👩‍🏫 Вход для педагога</h2>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="passwordInput" placeholder="Введите пароль" onkeypress="if(event.key==='Enter') login()">
             </div>
+            <button class="btn btn-primary" onclick="login()" style="width:100%;">Войти</button>
+            <p style="text-align:center;margin-top:15px;color:#999;">Пароль: 123456</p>
         </div>
+    </div>
 
-        <!-- Основной интерфейс -->
-        <div id="mainContent" style="display:none;">
-            <div class="container">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-                    <h1>👩‍🏫 Панель педагога</h1>
-                    <button class="btn btn-secondary" onclick="logout()">🚪 Выйти</button>
+    <!-- Основной интерфейс -->
+    <div id="mainContent" style="display:none;">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+                <h1>👩‍🏫 Панель педагога</h1>
+                <button class="btn btn-secondary" onclick="logout()">🚪 Выйти</button>
+            </div>
+
+            <div id="statusMessage"></div>
+
+            <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
+                <h3>📊 Статистика</h3>
+                <div class="stats-grid">
+                    <div><strong>👨‍🎓 Учеников:</strong> <span id="totalStudents">0</span></div>
+                    <div><strong>🪙 Всего монет:</strong> <span id="totalCoins">0</span></div>
+                    <div><strong>📚 Групп:</strong> <span id="totalGroups">0</span></div>
                 </div>
+            </div>
 
-                <div id="statusMessage"></div>
-
-                <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
-                    <h3>📊 Статистика</h3>
-                    <div class="stats-grid">
-                        <div><strong>👨‍🎓 Учеников:</strong> <span id="totalStudents">0</span></div>
-                        <div><strong>🪙 Всего монет:</strong> <span id="totalCoins">0</span></div>
-                        <div><strong>📚 Групп:</strong> <span id="totalGroups">0</span></div>
-                    </div>
-                </div>
-
-                <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
-                    <h3>➕ Добавить ученика</h3>
-                    <form id="studentForm" onsubmit="addStudent(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Имя ученика *</label>
-                                <input type="text" id="studentName" required placeholder="Иван Петров">
-                            </div>
-                            <div class="form-group">
-                                <label>Группа *</label>
-                                <input type="text" id="studentGroup" required placeholder="Группа А">
-                            </div>
+            <div style="background:#f8faff;padding:20px;border-radius:15px;margin-bottom:20px;">
+                <h3>➕ Добавить ученика</h3>
+                <form id="studentForm" onsubmit="addStudent(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Имя ученика *</label>
+                            <input type="text" id="studentName" required placeholder="Иван Петров">
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Начальные монеты</label>
-                                <input type="number" id="studentCoins" value="0" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Комментарий</label>
-                                <input type="text" id="studentComment" placeholder="За что начислены">
-                            </div>
+                        <div class="form-group">
+                            <label>Группа *</label>
+                            <input type="text" id="studentGroup" required placeholder="Группа А">
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%;">➕ Добавить ученика</button>
-                    </form>
-                </div>
-
-                <div style="background:#f8faff;padding:20px;border-radius:15px;">
-                    <h3>👨‍🎓 Список учеников</h3>
-                    <div id="studentsList">
-                        <p>Загрузка...</p>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Начальные монеты</label>
+                            <input type="number" id="studentCoins" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Комментарий</label>
+                            <input type="text" id="studentComment" placeholder="За что начислены">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">➕ Добавить ученика</button>
+                </form>
+            </div>
+
+            <div style="background:#f8faff;padding:20px;border-radius:15px;">
+                <h3>👨‍🎓 Список учеников</h3>
+                <div id="studentsList">
+                    <p>Загрузка...</p>
                 </div>
             </div>
         </div>
@@ -207,31 +205,34 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ============================================
-        // ⚠️ ВСТАВЬТЕ СВОИ КЛЮЧИ ЗДЕСЬ!
+        // 🔑 ВСТАВЬТЕ СВОИ КЛЮЧИ ЗДЕСЬ:
         // ============================================
-        const SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co/rest/v1/';
-        const SUPABASE_KEY = 'sb_publishable_E5Ptv_QdzYfGDrxB6nzv-A_YGCKTUz3';
+        const MY_SUPABASE_URL = 'https://hbbpkfqlgwruklzanmwv.supabase.co/rest/v1/';
+        const MY_SUPABASE_KEY = 'sb_publishable_E5Ptv_QdzYfGDrxB6nzv-A_YGCKTUz3';
         // ============================================
 
         const ADMIN_PASSWORD = '123456';
         let students = [];
         let groups = [];
 
-        // Инициализация Supabase
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // СОЗДАЕМ КЛИЕНТ ТОЛЬКО ОДИН РАЗ
+        const sb = supabase.createClient(MY_SUPABASE_URL, MY_SUPABASE_KEY);
 
-        // Проверка ключей
-        if (SUPABASE_URL === 'https://ВАШ_ПРОЕКТ.supabase.co' || SUPABASE_KEY === 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ') {
+        console.log('✅ Supabase инициализирован');
+
+        // Проверяем ключи
+        if (MY_SUPABASE_URL === 'https://ВАШ_ПРОЕКТ.supabase.co' || MY_SUPABASE_KEY === 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ') {
             document.getElementById('loginForm').innerHTML = `
                 <div class="login-form">
                     <h2>⚠️ Ошибка настройки</h2>
                     <div class="error-message">
                         <p><strong>Не вставлены ключи Supabase!</strong></p>
-                        <p>Откройте файл admin.html и вставьте свои ключи в переменные:</p>
+                        <p>Откройте файл admin.html и найдите строки:</p>
                         <code style="display:block;background:#f4f4f4;padding:10px;border-radius:5px;margin:10px 0;white-space:pre-wrap;">
-const SUPABASE_URL = 'https://ВАШ_ПРОЕКТ.supabase.co';
-const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
+const MY_SUPABASE_URL = 'https://ВАШ_ПРОЕКТ.supabase.co';
+const MY_SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                         </code>
+                        <p>Замените на свои данные из настроек Supabase.</p>
                     </div>
                 </div>
             `;
@@ -241,7 +242,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
 
         async function checkConnection() {
             try {
-                const { data, error } = await supabaseClient.from('students').select('count');
+                const { data, error } = await sb.from('students').select('count');
                 if (error) {
                     showError('Ошибка подключения: ' + error.message);
                     return;
@@ -299,8 +300,8 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
         async function loadData() {
             try {
                 const [studentsRes, groupsRes] = await Promise.all([
-                    supabaseClient.from('students').select('*').order('coins', { ascending: false }),
-                    supabaseClient.from('groups').select('*').order('name')
+                    sb.from('students').select('*').order('coins', { ascending: false }),
+                    sb.from('groups').select('*').order('name')
                 ]);
 
                 if (studentsRes.error) throw studentsRes.error;
@@ -338,7 +339,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                     history: [{ amount: coins, comment: comment, date: new Date().toLocaleDateString('ru-RU') }]
                 };
 
-                const { data, error } = await supabaseClient
+                const { data, error } = await sb
                     .from('students')
                     .insert([newStudent])
                     .select()
@@ -356,6 +357,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
 
             } catch (error) {
                 showError('Ошибка добавления: ' + error.message);
+                alert('❌ Ошибка добавления ученика');
             }
         }
 
@@ -377,7 +379,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                 const history = student.history || [];
                 history.push({ amount: numAmount, comment: comment, date: new Date().toLocaleDateString('ru-RU') });
 
-                const { error } = await supabaseClient
+                const { error } = await sb
                     .from('students')
                     .update({ coins: newCoins, history: history })
                     .eq('id', studentId);
@@ -419,7 +421,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
                 const history = student.history || [];
                 history.push({ amount: -numAmount, comment: comment, date: new Date().toLocaleDateString('ru-RU') });
 
-                const { error } = await supabaseClient
+                const { error } = await sb
                     .from('students')
                     .update({ coins: newCoins, history: history })
                     .eq('id', studentId);
@@ -442,7 +444,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
 
             const student = students.find(s => s.id === studentId);
             try {
-                const { error } = await supabaseClient
+                const { error } = await sb
                     .from('students')
                     .delete()
                     .eq('id', studentId);
@@ -519,7 +521,7 @@ const SUPABASE_KEY = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
             alert(msg);
         }
 
-        console.log('✅ Admin panel loaded');
+        console.log('✅ Admin panel loaded successfully!');
     </script>
 </body>
 </html>
