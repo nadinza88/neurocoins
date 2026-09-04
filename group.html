@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рейтинг группы - Нейрокоины</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Nozhik';
+            src: local('Nozhik'), local('Arial');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #025FEB 0%, #00C3FA 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 30px 80px rgba(2, 95, 235, 0.2);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #f8faff;
+            color: #025FEB;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #eef2ff;
+            transform: scale(1.05);
+        }
+
+        .group-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .group-btn {
+            padding: 12px 25px;
+            border: 2px solid #dfe6e9;
+            border-radius: 50px;
+            background: white;
+            cursor: pointer;
+            font-family: 'Nozhik', 'Montserrat', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .group-btn.active {
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            color: white;
+            border-color: #025FEB;
+        }
+
+        .group-btn:hover {
+            border-color: #025FEB;
+            transform: translateY(-2px);
+        }
+
+        .rating-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .rating-table th {
+            background: linear-gradient(135deg, #025FEB, #00C3FA);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .rating-table th:first-child {
+            border-radius: 15px 0 0 0;
+        }
+
+        .rating-table th:last-child {
+            border-radius: 0 15px 0 0;
+        }
+
+        .rating-table td {
+            padding: 15px;
+            border-bottom: 2px solid #f8faff;
+        }
+
+        .rating-table tr:hover {
+            background: #f8faff;
+        }
+
+        .rating-table .rank {
+            font-weight: 700;
+            color: #025FEB;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .rating-table .student-name {
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .rating-table .coins {
+            font-weight: 700;
+            color: #00b894;
+            font-size: 1.1em;
+        }
+
+        .rating-table .group-tag {
+            display: inline-block;
+            padding: 3px 12px;
+            background: #eef2ff;
+            color: #025FEB;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .top-student {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .top-student .crown {
+            font-size: 3em;
+        }
+
+        .top-student .name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        .top-student .coins {
+            font-size: 1.3em;
+            color: #2d3436;
+        }
+
+        .top-student .group {
+            font-size: 1em;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8faff;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #025FEB;
+        }
+
+        .stat-card .label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .rating-table {
+                font-size: 0.9em;
+            }
+
+            .rating-table th,
+            .rating-table td {
+                padding: 10px;
+            }
+
+            .group-btn {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+
+            .top-student .name {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Рейтинг клуба</h1>
+            <a href="index.html" class="back-btn">← На главную</a>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="number" id="totalStudents">0</div>
+                <div class="label">👨‍🎓 Учеников</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalCoins">0</div>
+                <div class="label">🪙 Всего нейрокоинов</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="avgCoins">0</div>
+                <div class="label">📊 Средний балл</div>
+            </div>
+        </div>
+
+        <!-- Выбор группы -->
+        <div class="group-selector" id="groupSelector">
+            <button class="group-btn active" onclick="selectGroup('all')">Все группы</button>
+        </div>
+
+        <!-- Топ ученик -->
+        <div id="topStudent"></div>
+
+        <!-- Таблица рейтинга -->
+        <div id="ratingContent">
+            <div class="loading">Загрузка...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 🔑 Настройки Supabase (ТЕ ЖЕ, ЧТО И В ADMIN)
+        const supabaseUrl = 'https://ВАШ_ПРОЕКТ.supabase.co';
+        const supabaseKey = 'ВАШ_ПУБЛИЧНЫЙ_КЛЮЧ';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let students = [];
+        let groups = [];
+        let currentGroup = 'all';
+
+        // Загрузка данных
+        async function loadData() {
+            try {
+                const [studentsRes, groupsRes] = await Promise.all([
+                    supabase.from('students').select('*').order('coins', { ascending: false }),
+                    supabase.from('groups').select('*').order('name')
+                ]);
+
+                if (studentsRes.error) throw studentsRes.error;
+                if (groupsRes.error) throw groupsRes.error;
+
+                students = studentsRes.data || [];
+                groups = groupsRes.data || [];
+
+                renderGroupSelector();
+                renderStats();
+                renderRating();
+
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('ratingContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <h3>Ошибка загрузки данных</h3>
+                        <p>Проверьте подключение к интернету</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Выбор группы
+        function selectGroup(group) {
+            currentGroup = group;
+            document.querySelectorAll('.group-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.group === group) btn.classList.add('active');
+            });
+            renderRating();
+        }
+
+        // Рендер выбора группы
+        function renderGroupSelector() {
+            const container = document.getElementById('groupSelector');
+            let html = `<button class="group-btn active" data-group="all" onclick="selectGroup('all')">👥 Все группы</button>`;
+            groups.forEach(g => {
+                const count = students.filter(s => s.group === g.name).length;
+                html += `<button class="group-btn" data-group="${g.name}" onclick="selectGroup('${g.name}')">${g.name} (${count})</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Рендер статистики
+        function renderStats() {
+            let filtered = students;
+            if (currentGroup !== 'all') {
+                filtered = students.filter(s => s.group === currentGroup);
+            }
+
+            document.getElementById('totalStudents').textContent = filtered.length;
+            const totalCoins = filtered.reduce((sum, s) => sum + s.coins, 0);
+            document.getElementById('totalCoins').textContent = totalCoins;
+            document.getElementById('avgCoins').textContent = filtered.length > 0 ? Math.round(totalCoins / filtered.length) : 0;
+        }
+
+        // Рендер рейтинга
+        function renderRating() {
+            const container = document.getElementById('ratingContent');
+            const topContainer = document.getElementById('topStudent');
+
+            let filtered = students;
+            if (currentGroup !== 'all') {
+                filtered = students.filter(s => s.group === currentGroup);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📚</div>
+                        <h3>В этой группе пока нет учеников</h3>
+                    </div>
+                `;
+                topContainer.innerHTML = '';
+                return;
+            }
+
+            // Сортируем по убыванию
+            const sorted = [...filtered].sort((a, b) => b.coins - a.coins);
+
+            // Топ ученик
+            const top = sorted[0];
+            topContainer.innerHTML = `
+                <div class="top-student">
+                    <div class="crown">👑</div>
+                    <div class="name">${top.name}</div>
+                    <div class="coins">🪙 ${top.coins} нейрокоинов</div>
+                    <div class="group">Группа: ${top.group}</div>
+                </div>
+            `;
+
+            // Таблица
+            let html = `
+                <table class="rating-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">🏅</th>
+                            <th>👤 Ученик</th>
+                            <th>📚 Группа</th>
+                            <th style="text-align:right;">🪙 Нейрокоины</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            sorted.forEach((s, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
+                html += `
+                    <tr>
+                        <td class="rank">${medal}</td>
+                        <td class="student-name">${s.name}</td>
+                        <td><span class="group-tag">${s.group}</span></td>
+                        <td class="coins" style="text-align:right;">🪙 ${s.coins}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+            renderStats();
+        }
+
+        // Автообновление каждые 30 секунд
+        setInterval(loadData, 30000);
+
+        // Инициализация
+        loadData();
+    </script>
+</body>
+</html>
